@@ -6,35 +6,36 @@ import { TabMenu } from 'primereact/tabmenu';
 import { Chart } from 'primereact/chart';
 import { FaWater, FaLightbulb, FaFaucet, FaHome } from "react-icons/fa"; 
 import { MdFamilyRestroom} from "react-icons/md";
-import {ENERGIA_FORMAL} from './api/data'
-const TOTAL_FAMILIAS = 21422;
-const TOTAL_FAMILIAS_RENABAP =  10186;
+import {ENERGIA, AGUA, EFLUENTES, SITUACION_DOMINIAL, RENABAP} from './api/data'
+
 
 const items = [
-  {label: 'Familias', icon: MdFamilyRestroom },
-  {label: 'Energia', icon: FaLightbulb},
-  {label: 'Efluentes', icon: FaWater},
-  {label: 'Agua', icon: FaFaucet },
-  {label: 'Situacion dominial', icon: FaHome}
+  {label: 'Familias', icon: MdFamilyRestroom, data: RENABAP },
+  {label: 'Energia', icon: FaLightbulb, data: ENERGIA },
+  {label: 'Efluentes', icon: FaWater, data: EFLUENTES },
+  {label: 'Agua', icon: FaFaucet, data: AGUA },
+  {label: 'Situacion dominial', icon: FaHome, data: SITUACION_DOMINIAL },
 ];
+
+const colors =            { backgroundColor: [
+  "#42A5F5",
+  "#66BB6A",
+],
+hoverBackgroundColor: [
+  "#64B5F6",
+  "#81C784",
+  "#FFB74D"
+]}
 
 export default function Home() {
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const [chartData] = useState({
-    labels: ['Renabap', 'No renabap',],
+  const [chartData, setChartData] = useState({
+    labels: Object.keys(RENABAP),
     datasets: [
         {
-            data: [TOTAL_FAMILIAS_RENABAP, TOTAL_FAMILIAS - TOTAL_FAMILIAS_RENABAP],
-            backgroundColor: [
-                "#42A5F5",
-                "#66BB6A",
-            ],
-            hoverBackgroundColor: [
-                "#64B5F6",
-                "#81C784",
-                "#FFB74D"
-            ]
+            data: Object.values(RENABAP),
+            ...colors
         }
     ]
 });
@@ -50,8 +51,23 @@ const lightOptions = {
 };
 
 useEffect(() => {
-  console.log(ENERGIA_FORMAL)
+  console.log(SITUACION_DOMINIAL)
 }, [])
+
+const onTabChange = (e) => {
+  console.log(e)
+  setChartData(prev=>({
+    ...prev,
+    labels: Object.keys(e.value.data),
+    datasets: [
+      {
+          data: Object.values(e.value.data),
+          ...colors
+      }
+  ]
+  }))
+  setActiveIndex(e.index);
+}
 
   return (
     <div >
@@ -62,7 +78,7 @@ useEffect(() => {
       </Head>
 
       <main  className="w-full" style={{height: '100vh'}}>
-      <TabMenu model={items} activeIndex={activeIndex} onTabChange={(e) => setActiveIndex(e.index)}/>
+      <TabMenu model={items} activeIndex={activeIndex} onTabChange={onTabChange}/>
       <div className="max-w-4xl justify-center "> 
       <Chart type="pie" data={chartData} options={lightOptions} className="" />
       </div>
