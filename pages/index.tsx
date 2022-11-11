@@ -1,5 +1,5 @@
 
-import {useState, useEffect} from 'react'
+import {useState, useEffect, useMemo} from 'react'
 import Head from 'next/head'
 import Image from 'next/image'
 import { TabMenu } from 'primereact/tabmenu';
@@ -9,25 +9,33 @@ import { MdFamilyRestroom} from "react-icons/md";
 import {ENERGIA, AGUA, EFLUENTES, SITUACION_DOMINIAL, RENABAP} from './api/data'
 
 
-const items = [
-  {label: 'Familias', icon: MdFamilyRestroom, data: RENABAP },
-  {label: 'Energia', icon: FaLightbulb, data: ENERGIA },
-  {label: 'Efluentes', icon: FaWater, data: EFLUENTES },
-  {label: 'Agua', icon: FaFaucet, data: AGUA },
-  {label: 'Situacion dominial', icon: FaHome, data: SITUACION_DOMINIAL },
-];
 
-const colors =            { backgroundColor: [
+
+const colors ={ 
+  backgroundColor: [
   "#42A5F5",
   "#66BB6A",
+  "#FFA726",
+  "#EF5350",
+  "#AB47BC",
 ],
 hoverBackgroundColor: [
   "#64B5F6",
   "#81C784",
-  "#FFB74D"
+  "#FFB74D",
+  "#EF9A9A",
+  "#BA68C8",
 ]}
 
 export default function Home() {
+  const items = useMemo(()=>([
+    {label: 'Familias', icon: MdFamilyRestroom, data: RENABAP },
+    {label: 'Energia', icon: FaLightbulb, data: ENERGIA },
+    {label: 'Efluentes', icon: FaWater, data: EFLUENTES },
+    {label: 'Agua', icon: FaFaucet, data: AGUA },
+    {label: 'Situacion dominial', icon: FaHome, data: SITUACION_DOMINIAL },
+  ]), []);
+
   const [activeIndex, setActiveIndex] = useState(0);
 
   const [chartData, setChartData] = useState({
@@ -53,8 +61,12 @@ const lightOptions = {
 useEffect(() => {
   console.log(SITUACION_DOMINIAL)
 }, [])
+interface Item {
+  index: number;
+  value: any;
+}
 
-const onTabChange = (e) => {
+const onTabChange = (e: Item ) => {
   console.log(e)
   setChartData(prev=>({
     ...prev,
@@ -74,7 +86,7 @@ const onTabChange = (e) => {
       <Head>
         <title>Graficos ReNaBaP - Presidente Peron</title>
         <meta name="description" content="Graficos de datos del Registro Nacional de Barrios Populares del municipio Presidente Peron" />
-        <link rel="icon" href="/iconNA.png" />
+        {/* <link rel="icon" href="/iconNA.png" /> */}
       </Head>
 
       <main  className="w-full" style={{height: '100vh'}}>
