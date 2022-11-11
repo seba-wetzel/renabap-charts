@@ -1,12 +1,12 @@
 
-import {useState} from 'react'
+import {useState, useEffect} from 'react'
 import Head from 'next/head'
 import Image from 'next/image'
 import { TabMenu } from 'primereact/tabmenu';
 import { Chart } from 'primereact/chart';
 import { FaWater, FaLightbulb,FaHouse, FaFaucet, FaHome } from "react-icons/fa"; 
 import { MdFamilyRestroom} from "react-icons/md";
-
+import {ENERGIA_FORMAL} from './api/data'
 const TOTAL_FAMILIAS = 21422;
 const TOTAL_FAMILIAS_RENABAP =  10186;
 
@@ -48,6 +48,11 @@ const lightOptions = {
         }
     }
 };
+
+useEffect(() => {
+  console.log(ENERGIA_FORMAL)
+}, [])
+
   return (
     <div >
       <Head>
