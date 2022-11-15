@@ -7,7 +7,7 @@ import { Chart } from 'primereact/chart';
 import { FaWater, FaLightbulb, FaFaucet, FaHome } from "react-icons/fa"; 
 import { MdFamilyRestroom} from "react-icons/md";
 import {ENERGIA, AGUA, EFLUENTES, SITUACION_DOMINIAL, RENABAP} from './api/data'
-
+import {ReactECharts, ReactEChartsProps} from '../components/Echarts'
 
 
 
@@ -26,7 +26,57 @@ hoverBackgroundColor: [
   "#EF9A9A",
   "#BA68C8",
 ]}
+const option: ReactEChartsProps["option"] ={
+  toolbox: {
+    bottom: 0,
+    show: true,
+    feature: {
+      saveAsImage: {
+        show: true,
+        title: "Guardar como imagen",
+        type: "png",
+        name: "myChart",
+        excludeComponents: ["toolbox"],
+        pixelRatio: 2,
 
+      },
+    },
+  },
+  // title: {
+  //   text: 'Referer of a Website',
+  //   subtext: 'Fake Data',
+  //   right: '10%'
+  // },
+  tooltip: {
+    trigger: 'item',
+      formatter: '{b} : {c} ({d}%)'
+  },
+  legend: {
+    orient: 'vertical',
+    left: 'left'
+  },
+  series: [
+    {
+      name: 'Access From',
+      type: 'pie',
+      radius: '50%',
+      data: [
+      //   { value: 1048, name: 'Search Engine' },
+      //   { value: 735, name: 'Direct' },
+      //   { value: 580, name: 'Email' },
+      //   { value: 484, name: 'Union Ads' },
+      //   { value: 300, name: 'Video Ads',label: { show: true, position: 'outside', formatter:'{a} - {d}%' } },
+      ],
+      emphasis: {
+        itemStyle: {
+          shadowBlur: 10,
+          shadowOffsetX: 0,
+          shadowColor: 'rgba(0, 0, 0, 0.5)'
+        }
+      }
+    }
+  ]
+};
 export default function Home() {
   const items = useMemo(()=>([
     {label: 'Familias', icon: MdFamilyRestroom, data: RENABAP },
@@ -38,28 +88,32 @@ export default function Home() {
 
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const [chartData, setChartData] = useState({
-    labels: Object.keys(RENABAP),
-    datasets: [
-        {
-            data: Object.values(RENABAP),
-            ...colors
-        }
-    ]
-});
+  const [chartData, setChartData] = useState(option);
 
-const lightOptions = {
-    plugins: {
-        legend: {
-            labels: {
-                color: '#495057'
-            }
-        }
-    }
-};
 
 useEffect(() => {
   console.log(SITUACION_DOMINIAL)
+  const data = Object.entries(items[0].data)?.map(([a ,b]:[string, unknown])=>({value: b, name: a}))
+  setChartData(prev=>({
+    ...prev,
+    series: [
+      {
+        name: 'Access From',
+        type: 'pie',
+        radius: '70%',
+        label: { show: true, position: 'outside', formatter:'{b} - {d}%' },
+        data: data,
+        emphasis: {
+          itemStyle: {
+            shadowBlur: 10,
+            shadowOffsetX: 0,
+            shadowColor: 'rgba(0, 0, 0, 0.5)'
+          }
+        }
+      }
+    ]
+  
+  }))
 }, [])
 interface Item {
   index: number;
@@ -67,16 +121,26 @@ interface Item {
 }
 
 const onTabChange = (e: Item ) => {
-  console.log(e)
+  const data:Array<{name: string, value: number}> = Object.entries(e.value.data)?.map(([a ,b]:[string, number])=>({value: b, name: a}))
   setChartData(prev=>({
     ...prev,
-    labels: Object.keys(e.value.data),
-    datasets: [
+    series: [
       {
-          data: Object.values(e.value.data),
-          ...colors
+        name: 'Access From',
+        type: 'pie',
+        radius: '70%',
+        label: { show: true, position: 'outside', formatter:'{b} - {d}%' },
+        data: data,
+        emphasis: {
+          itemStyle: {
+            shadowBlur: 10,
+            shadowOffsetX: 0,
+            shadowColor: 'rgba(0, 0, 0, 0.5)'
+          }
+        }
       }
-  ]
+    ]
+  
   }))
   setActiveIndex(e.index);
 }
@@ -90,9 +154,10 @@ const onTabChange = (e: Item ) => {
       </Head>
 
       <main  className="w-full" style={{height: '100vh'}}>
-      <TabMenu model={items} activeIndex={activeIndex} onTabChange={onTabChange}/>
+      <TabMenu model={items} activeIndex={activeIndex} onTabChange={onTabChange} />
       <div className="max-w-4xl justify-center "> 
-      <Chart type="pie" data={chartData} options={lightOptions} className="" />
+      {/* <Chart type="pie" data={chartData} options={lightOptions} className="" /> */}
+     <ReactECharts option={chartData}  style={{minHeight:'90vh', minWidth:'100vw', padding:'20px'}} theme="light" />
       </div>
 </main>
     </div>
